@@ -1,9 +1,5 @@
 # 11/23/2021 v6.0
-# Personal Drones
-#
-# Allows for a player to attach drones to their person
-
-jump _main equal 1 1
+# Delay Function
 
 # Delay Function
 # To call do
@@ -17,7 +13,3 @@ op add end start @delay
 _delayLoop:
 jump _delayLoop lessThan @time end
 set @counter retAddr
-
-_main:
-
-
