@@ -76,6 +76,13 @@ sensor y player @y
 op sub y y @thisy
 op pow absy y 2
 
+jump _gPPLogicStart lessThan 4 absx
+jump _gPPLogicStart lessThan 4 absy
+set moveX 0
+set moveY 0
+jump _gPPDone equal 0 0
+
+_gPPLogicStart:
 jump _gPPyLess lessThan absy absx
 
 
@@ -83,7 +90,6 @@ jump _gPPxNeg lessThan y 0
 set moveX 11
 set moveY 0
 jump _gPPDone equal 1 1
-
 
 _gPPxNeg:
 set moveX -11
@@ -104,6 +110,7 @@ set moveY -11
 jump _gPPDone equal 1 1
 
 _gPPDone:
+
 print moveX
 printflush message1
 set @counter retAddr
