@@ -1,0 +1,127 @@
+# 11/23/2021
+# v6.0
+# 
+# Snake Game
+
+# Variables
+set scale 11
+set screenSize 176
+# op div snakeX screenSize 2
+# op div snakeY screenSize 2
+
+
+jump _main equal 1 1
+
+# Functions
+
+# Delay Function
+# To call do
+# 
+# set delay [time to wait for]
+# op add retAddr @counter 1
+# jump _delayFuction equal 1 1
+_delayFuction:
+set start @time
+op add end start delay
+_delayLoop:
+jump _delayLoop lessThan @time end
+set @counter retAddr
+
+
+# Display To Screen
+#
+# op add retAddr @counter 1
+# jump _display equal 1 1
+_display:
+drawflush display1
+set @counter retAddr
+
+
+# Move Snake
+#
+# op add retAddr @counter 1
+# jump _move equal 1 1
+_move:
+op add snakeX snakeX moveY
+op add snakeY snakeY moveX
+jump _moveXUPDone lessThan snakeX screenSize
+set snakeX 0
+_moveXUPDone:
+jump _moveYUPDone lessThan snakeY screenSize
+set snakeY 0
+_moveYUPDone:
+jump _moveXDOWNDone lessThan -11 snakeX
+set snakeX 165
+_moveXDOWNDone:
+jump _moveYDOWNDone lessThan -11 snakeY
+set snakeY 165
+_moveYDOWNDone:
+draw rect snakeX snakeY scale scale 0 0
+set @counter retAddr
+
+
+# Get Player Position
+#
+# op add retAddr @counter 1
+# jump _getPlayerPos equal 1 1
+_getPlayerPos:
+getlink firstLink 0
+radar player any any distance firstLink 1 player
+
+sensor x player @x
+op sub x x @thisx
+op pow absx x 2
+
+sensor y player @y
+op sub y y @thisy
+op pow absy y 2
+
+jump _gPPyLess lessThan absy absx
+
+
+jump _gPPxNeg lessThan y 0
+set moveX 11
+set moveY 0
+jump _gPPDone equal 1 1
+
+
+_gPPxNeg:
+set moveX -11
+set moveY 0
+jump _gPPDone equal 1 1
+
+
+_gPPyLess:
+
+jump _gPPyNeg lessThan x 0
+set moveX 0
+set moveY 11
+jump _gPPDone equal 1 1
+
+_gPPyNeg:
+set moveX 0
+set moveY -11
+jump _gPPDone equal 1 1
+
+_gPPDone:
+print moveX
+printflush message1
+set @counter retAddr
+
+
+# Main loop
+_main:
+draw clear 0 0 0 0 0 0
+
+op add retAddr @counter 1
+jump _getPlayerPos equal 1 1
+
+op add retAddr @counter 1
+jump _move equal 1 1
+
+op add retAddr @counter 1
+jump _display equal 1 1
+
+set delay 500
+op add retAddr @counter 1
+jump _delayFuction equal 1 1
