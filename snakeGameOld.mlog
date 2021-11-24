@@ -7,9 +7,6 @@
 set scale 11
 set screenSize 176
 set tailLen 2
-# op div snakeX screenSize 2
-# op div snakeY screenSize 2
-
 
 jump _main equal 1 1
 

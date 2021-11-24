@@ -1,0 +1,224 @@
+# 11/23/2021
+# v6.0
+# 
+# Snake Game
+
+#
+# Prog. Data
+# ----------
+# 0x12 - Screen Size    - 176
+# 0x13 - Scale          - 11
+# 0x14 - Tail Len       - float
+# 0x15 - Apple X        - float
+# 0x16 - Apple Y        - float
+# 0x17 - Snake Head X   - float
+# 0x18 - Snake Head Y   - float
+# 0x19 - Snake Rot.     - float
+# 0x1A - Tail X         - float
+# 0x1B - Tail X         - float
+# 0x1C - Tail Rot       - float
+# .
+# .
+# .
+
+# Variables
+set screenSize 176
+set scale 11
+set tailLen 0
+
+write 0 cell1 23
+write 0 cell1 24
+
+write screenSize cell1 18
+write scale cell1 19
+write tailLen cell1 20
+
+jump _main equal 1 1
+
+
+
+
+
+# Functions
+
+# Delay Function
+# To call do
+# 
+# set delay [time to wait for]
+# op add retAddr @counter 1
+# jump _delayFuction equal 1 1
+_delayFuction:
+set start @time
+op add end start delay
+_delayLoop:
+jump _delayLoop lessThan @time end
+set @counter retAddr
+
+
+
+
+
+# Display To Screen
+#
+# op add retAddr @counter 1
+# jump _display equal 1 1
+_display:
+drawflush display1
+set @counter retAddr
+
+
+
+
+
+# Move Snake
+#
+# op add retAddr @counter 1
+# jump _move equal 1 1
+_move:
+
+draw rect headX headY scale scale 0 0
+
+set @counter retAddr
+
+
+
+
+
+# Set Player Position
+#
+# op add retAddr @counter 1
+# jump _getPlayerPos equal 1 1
+_setPlayerPos:
+
+# Create the player object
+radar player any any distance duo1 1 player
+
+# Fill in Info
+sensor playerX player @x
+write playerX cell1 0
+
+sensor playerY player @y
+write playerY cell1 1
+
+sensor playerX player @x
+op sub playerRelX playerX @thisx
+write playerRelX cell1 2
+
+sensor playerY player @y
+op sub playerRelY playerY @thisy
+write playerRelY cell1 3
+
+sensor playerRot player @rotation
+write playerRot cell1 4
+
+set @counter retAddr
+
+
+
+
+
+# Get Player Rotation
+#
+# op add retAddr @counter 1
+# jump _getPlayerAbsPos equal 1 1
+_getPlayerRot:
+
+read playerRot cell1 4
+
+set @counter retAddr
+
+
+
+
+# Calculate New Head Position
+#
+# op add retAddr @counter 1
+# jump _calcHeadPos equal 1 1
+_calcHeadPos:
+
+read headX cell1 23
+read headY cell1 24
+
+read headRot cell1 25
+write headRot cell1 10
+
+# 45 < playerRot < 135  - North
+# 45 > playerRot > 315  - East
+# 225 < playerRot < 315 - South
+# 135 < playerRot < 225 - West
+
+jump _cHPMoveEast lessThan playerRot 45
+jump _cHPMoveEast lessThan 315 playerRot
+jump _cHPMoveNorth lessThan playerRot 135
+jump _cHPMoveWest lessThan playerRot 225
+jump _cHPMoveSouth lessThan playerRot 315
+
+
+_cHPMoveNorth:
+op add headY headY scale
+write headY cell1 24
+jump _cHPDone equal 1 1
+
+_cHPMoveEast:
+op add headX headX scale
+write headX cell1 23
+jump _cHPDone equal 1 1
+
+_cHPMoveSouth:
+op sub headY headY scale
+write headY cell1 24
+jump _cHPDone equal 1 1
+
+_cHPMoveWest:
+op sub headX headX scale
+write headX cell1 23
+jump _cHPDone equal 1 1
+
+_cHPDone:
+set @counter retAddr
+
+
+
+
+
+
+
+
+
+
+# Main loop
+_main:
+
+# Clear the Screen
+draw clear 0 0 0 0 0 0
+
+# Get Player Position Data
+op add retAddr @counter 1
+jump _setPlayerPos equal 1 1
+
+# Get Player Rotation
+op add retAddr @counter 1 
+jump _getPlayerRot equal 1 1
+
+# Calculate New Head Position
+op add retAddr @counter 1
+jump _calcHeadPos equal 1 1
+
+# Calculate New Tail Position
+
+
+# Draw The Snake
+op add retAddr @counter 1
+jump _move equal 1 1
+
+# Send to Display
+op add retAddr @counter 1
+jump _display equal 1 1
+
+# Delay
+set delay 500
+op add retAddr @counter 1
+jump _delayFuction equal 1 1
+
+# Reset
+jump _main equal 1 1
