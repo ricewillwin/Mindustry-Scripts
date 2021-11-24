@@ -15,23 +15,40 @@
 # 0x18 - Snake Head Y   - float
 # 0x19 - Snake Rot.     - float
 # 0x1A - Tail X         - float
-# 0x1B - Tail X         - float
+# 0x1B - Tail Y         - float
 # 0x1C - Tail Rot       - float
+# 0x1D - Tail X         - float
 # .
 # .
 # .
+
+
+_setup:
 
 # Variables
 set screenSize 176
 set scale 11
-set tailLen 0
+set tailLen 2
 
-write 0 cell1 23
-write 0 cell1 24
+write 44 cell1 23
+write 44 cell1 24
+write 0 cell1 25
+
 
 write screenSize cell1 18
 write scale cell1 19
 write tailLen cell1 20
+
+write 44 cell1 26
+write 33 cell1 27
+write 0 cell1 28
+write 44 cell1 29
+write 22 cell1 30
+write 0 cell1 31
+
+set delay 1500
+op add retAddr @counter 1
+jump _delayFuction equal 1 1
 
 jump _main equal 1 1
 
@@ -77,6 +94,22 @@ set @counter retAddr
 _move:
 
 draw rect headX headY scale scale 0 0
+
+read tailLen cell1 20
+set moveIndex 0
+_mTail:
+
+op mul memOffset 3 moveIndex
+op add tailXMem 26 memOffset
+op add tailYMem tailXMem 1
+
+read tailX cell1 tailXMem
+read tailY cell1 tailYMem
+
+draw rect tailX tailY scale scale 0 0
+
+op add moveIndex moveIndex 1
+jump _mTail lessThan moveIndex tailLen
 
 set @counter retAddr
 
@@ -142,39 +175,161 @@ read headY cell1 24
 read headRot cell1 25
 write headRot cell1 10
 
-# 45 < playerRot < 135  - North
-# 45 > playerRot > 315  - East
-# 225 < playerRot < 315 - South
-# 135 < playerRot < 225 - West
+# 45 < playerRot < 135  - North 0
+# 45 > playerRot > 315  - East 1
+# 225 < playerRot < 315 - South 2
+# 135 < playerRot < 225 - West 3
 
-jump _cHPMoveEast lessThan playerRot 45
-jump _cHPMoveEast lessThan 315 playerRot
-jump _cHPMoveNorth lessThan playerRot 135
-jump _cHPMoveWest lessThan playerRot 225
-jump _cHPMoveSouth lessThan playerRot 315
+jump _cHPLastDirWest equal headRot 3        # If the last direction was opposite skip this
+jump _cHPMoveEast lessThan playerRot 45     # Jump to the right direction
+jump _cHPMoveEast lessThan 315 playerRot    # Jump to the right direction
+_cHPLastDirWest:
+jump _cHPMoveWest lessThan playerRot 45     # Continue last direction
+jump _cHPMoveWest lessThan 315 playerRot    # Continue last direction
 
+jump _cHPLastDirSouth equal headRot 2       # If the last direction was opposite skip this
+jump _cHPMoveNorth lessThan playerRot 135   # Jump to the right direction
+_cHPLastDirSouth:
+jump _cHPMoveSouth lessThan playerRot 135   # Continue last direction
+
+jump _cHPLastDirEast equal headRot 1        # If the last direction was opposite skip this
+jump _cHPMoveWest lessThan playerRot 225    # Jump to the right direction
+_cHPLastDirEast:
+jump _cHPMoveEast lessThan playerRot 225    # Continue last direction
+
+jump _cHPLastDirNorth equal headRot 0       # If the last direction was opposite skip this
+jump _cHPMoveSouth lessThan playerRot 315   # Jump to the right direction
+_cHPLastDirNorth:
+jump _cHPMoveNorth lessThan playerRot 315   # Continue last direction
+
+jump _cHPDone equal 1 1
 
 _cHPMoveNorth:
 op add headY headY scale
 write headY cell1 24
+write 0 cell1 25
 jump _cHPDone equal 1 1
 
 _cHPMoveEast:
 op add headX headX scale
 write headX cell1 23
+write 1 cell1 25
 jump _cHPDone equal 1 1
 
 _cHPMoveSouth:
 op sub headY headY scale
 write headY cell1 24
+write 2 cell1 25
 jump _cHPDone equal 1 1
 
 _cHPMoveWest:
 op sub headX headX scale
 write headX cell1 23
+write 3 cell1 25
 jump _cHPDone equal 1 1
 
 _cHPDone:
+
+jump _cHPXPos lessThan -11 headX
+set headX 165
+write headX cell1 23
+_cHPXPos:
+jump _cHPXFine lessThan headX 176
+set headX 0
+write headX cell1 23
+_cHPXFine:
+
+jump _cHPYPos lessThan -11 headY
+set headY 165
+write headY cell1 24
+_cHPYPos:
+jump _cHPYFine lessThan headY 176
+set headY 0
+write headY cell1 24
+_cHPYFine:
+
+set @counter retAddr
+
+
+
+
+
+# Calculate Tail Position
+#
+# op add retAddr @counter 1
+# jump _calcTailPos equal 1 1
+_calcTailPos:
+
+read tailLen cell1 20
+
+
+set tailIndex 0
+_tailCalc:
+op add tempVal tempVal 1
+op mul memOffset 3 tailIndex
+op add tailXMem 26 memOffset
+op add tailYMem tailXMem 1
+op add tailDirMem tailYMem 1
+
+read tailX cell1 tailXMem
+read tailY cell1 tailYMem
+read tailDir cell1 tailDirMem
+read lastDir cell1 10
+
+op add nextTailDirMem tailDirMem 3
+write tailDir cell1 10
+write lastDir cell1 tailDirMem
+
+jump _tMoveNorth equal lastDir 0       # Jump to the right direction
+jump _tMoveEast equal lastDir 1        # Jump to the right direction
+jump _tMoveSouth equal lastDir 2       # Jump to the right direction
+jump _tMoveWest equal lastDir 3        # Jump to the right direction
+
+_tMoveNorth:
+op add tailY tailY 11
+jump _tCalcDone equal 1 1
+
+_tMoveEast:
+op add tailX tailX 11
+jump _tCalcDone equal 1 1
+
+_tMoveSouth:
+op add tailY tailY -11
+jump _tCalcDone equal 1 1
+
+_tMoveWest:
+op add tailX tailX -11
+jump _tCalcDone equal 1 1
+
+_tCalcDone:
+write tailX cell1 tailXMem
+write tailY cell1 tailYMem
+
+
+jump _tXPos lessThan -11 tailX
+set tailX 165
+write tailX cell1 tailXMem
+_tXPos:
+jump _tXFine lessThan tailX 176
+set tailX 0
+write tialX cell1 tailXMem
+_tXFine:
+
+jump _tYPos lessThan -11 tailY
+set tailY 165
+write tailY cell1 tailYMem
+_tYPos:
+jump _tYFine lessThan tailY 176
+set tailY 0
+write tailY cell1 tailYMem
+_tYFine:
+
+
+
+op add tailIndex tailIndex 1
+jump _tailCalc lessThan tailIndex tailLen
+
+
 set @counter retAddr
 
 
@@ -205,7 +360,8 @@ op add retAddr @counter 1
 jump _calcHeadPos equal 1 1
 
 # Calculate New Tail Position
-
+op add retAddr @counter 1
+jump _calcTailPos equal 1 1
 
 # Draw The Snake
 op add retAddr @counter 1
@@ -215,8 +371,11 @@ jump _move equal 1 1
 op add retAddr @counter 1
 jump _display equal 1 1
 
+print tempVal
+printflush message1
+
 # Delay
-set delay 500
+set delay 750
 op add retAddr @counter 1
 jump _delayFuction equal 1 1
 
