@@ -2,6 +2,17 @@
 # v6.0
 # 
 # Snake Game
+#
+# To - Do
+#
+# 1. Add apples
+# 2. Increase tail size
+# 3. Add start screen
+# 4. Rewrite using @counter instead of jumps
+#   - Might be faster
+# 5. Use multiple processors ?!?
+#   - Math Processor
+#   - Graphics Processor
 
 #
 # Prog. Data
@@ -22,6 +33,9 @@
 # .
 # .
 
+set delay 2000
+op add retAddr @counter 1
+jump _delayFuction equal 1 1
 
 _setup:
 
@@ -124,7 +138,7 @@ set @counter retAddr
 _setPlayerPos:
 
 # Create the player object
-radar player any any distance duo1 1 player
+radar player any any distance arc1 1 player
 
 # Fill in Info
 sensor playerX player @x
@@ -345,7 +359,8 @@ set @counter retAddr
 _main:
 
 # Clear the Screen
-draw clear 0 0 0 0 0 0
+draw clear 100 100 100 0 0 0
+draw color 0 0 0 0 0
 
 # Get Player Position Data
 op add retAddr @counter 1
