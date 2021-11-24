@@ -6,6 +6,7 @@
 # Variables
 set scale 11
 set screenSize 176
+set tailLen 2
 # op div snakeX screenSize 2
 # op div snakeY screenSize 2
 
@@ -44,6 +45,21 @@ set @counter retAddr
 _move:
 op add snakeX snakeX moveY
 op add snakeY snakeY moveX
+
+#set tail 0
+#_moveTailLoop:
+#set tailX snakeX
+#set tailY snakeY
+#op mul modx tail 2
+#op add mody modx 1
+#read modx cell1 modx
+#read mody cell1 mody
+#op add tailX tailX modx
+#op add tailY tailY mody
+#draw rect tailX tailY scale scale 0 0
+#op add tail tail 1
+#jump _moveTailLoop lessThanEq tail tailLen
+
 jump _moveXUPDone lessThan snakeX screenSize
 set snakeX 0
 _moveXUPDone:
@@ -111,8 +127,6 @@ jump _gPPDone equal 1 1
 
 _gPPDone:
 
-print moveX
-printflush message1
 set @counter retAddr
 
 
@@ -132,3 +146,27 @@ jump _display equal 1 1
 set delay 500
 op add retAddr @counter 1
 jump _delayFuction equal 1 1
+
+
+
+
+
+# memory stuff
+#set snakeLen 4
+#set snakeX 88
+#set snakeY 88
+#draw rect headX headY 11 11 0 0
+#set tail 2
+#set tailX snakeX
+#set tailY snakeY
+#op mul modx tail 2
+#op add mody modx 1
+#read modx cell1 modx
+#read mody cell1 mody
+#op add tailX tailX modx
+#op add tailY tailY mody
+#draw rect tailX tailY 11 11 0 0
+#op add tail tail 1
+#jump 7 lessThanEq tail snakeLen
+#draw clear 0 0 0 0 0 0
+#drawflush display1
