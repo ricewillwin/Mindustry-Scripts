@@ -42,7 +42,7 @@ _setup:
 # Variables
 set screenSize 176
 set scale 11
-set tailLen 2
+set tailLen 3
 
 write 44 cell1 23
 write 44 cell1 24
@@ -59,6 +59,9 @@ write 0 cell1 28
 write 44 cell1 29
 write 22 cell1 30
 write 0 cell1 31
+write 44 cell1 32
+write 11 cell1 33
+write 0 cell1 34
 
 set delay 1500
 op add retAddr @counter 1
@@ -120,6 +123,7 @@ op add tailYMem tailXMem 1
 read tailX cell1 tailXMem
 read tailY cell1 tailYMem
 
+draw color 15 15 15 0 0
 draw rect tailX tailY scale scale 0 0
 
 op add moveIndex moveIndex 1
@@ -141,18 +145,22 @@ _setPlayerPos:
 radar player any any distance arc1 1 player
 
 # Fill in Info
-sensor playerX player @x
+sensor playerX player @shootX
+printflush message1
+
 write playerX cell1 0
 
-sensor playerY player @y
+sensor playerY player @shootY
 write playerY cell1 1
 
-sensor playerX player @x
-op sub playerRelX playerX @thisx
+sensor center display1 @x
+sensor playerX player @shootX
+op sub playerRelX playerX center
 write playerRelX cell1 2
 
-sensor playerY player @y
-op sub playerRelY playerY @thisy
+sensor center display1 @y
+sensor playerY player @shootY
+op sub playerRelY playerY center
 write playerRelY cell1 3
 
 sensor playerRot player @rotation
@@ -194,27 +202,54 @@ write headRot cell1 10
 # 225 < playerRot < 315 - South 2
 # 135 < playerRot < 225 - West 3
 
-jump _cHPLastDirWest equal headRot 3        # If the last direction was opposite skip this
-jump _cHPMoveEast lessThan playerRot 45     # Jump to the right direction
-jump _cHPMoveEast lessThan 315 playerRot    # Jump to the right direction
+read playerRelX cell1 2
+read playerRelY cell1 3
+op pow playerAbsX playerRelX 2 
+op pow playerAbsY playerRelY 2 
+
+print playerRelX
+printflush message1
+print playerRelY
+printflush message2
+
+jump _cHPMoveX lessThan playerAbsY playerAbsX
+jump _cHPMoveY lessThan playerAbsX playerAbsY
+
+_cHPMoveX:
+jump _cHPLastDirWest equal headRot 3
+jump _cHPMoveEast lessThan 0 playerRelX
+jump _cHPMoveEast equal headRot 1
 _cHPLastDirWest:
-jump _cHPMoveWest lessThan playerRot 45     # Continue last direction
-jump _cHPMoveWest lessThan 315 playerRot    # Continue last direction
+jump _cHPMoveWest equal 1 1
 
-jump _cHPLastDirSouth equal headRot 2       # If the last direction was opposite skip this
-jump _cHPMoveNorth lessThan playerRot 135   # Jump to the right direction
+_cHPMoveY:
+jump _cHPLastDirSouth equal headRot 2
+jump _cHPMoveNorth lessThan 0 playerRelY
+jump _cHPMoveNorth equal headRot 0
 _cHPLastDirSouth:
-jump _cHPMoveSouth lessThan playerRot 135   # Continue last direction
+jump _cHPMoveSouth equal 1 1
 
-jump _cHPLastDirEast equal headRot 1        # If the last direction was opposite skip this
-jump _cHPMoveWest lessThan playerRot 225    # Jump to the right direction
-_cHPLastDirEast:
-jump _cHPMoveEast lessThan playerRot 225    # Continue last direction
+# jump _cHPLastDirWest equal headRot 3        # If the last direction was opposite skip this
+# jump _cHPMoveEast lessThan playerRot 45     # Jump to the right direction
+# jump _cHPMoveEast lessThan 315 playerRot    # Jump to the right direction
+# _cHPLastDirWest:
+# jump _cHPMoveWest lessThan playerRot 45     # Continue last direction
+# jump _cHPMoveWest lessThan 315 playerRot    # Continue last direction
 
-jump _cHPLastDirNorth equal headRot 0       # If the last direction was opposite skip this
-jump _cHPMoveSouth lessThan playerRot 315   # Jump to the right direction
-_cHPLastDirNorth:
-jump _cHPMoveNorth lessThan playerRot 315   # Continue last direction
+# jump _cHPLastDirSouth equal headRot 2       # If the last direction was opposite skip this
+# jump _cHPMoveNorth lessThan playerRot 135   # Jump to the right direction
+# _cHPLastDirSouth:
+# jump _cHPMoveSouth lessThan playerRot 135   # Continue last direction
+
+# jump _cHPLastDirEast equal headRot 1        # If the last direction was opposite skip this
+# jump _cHPMoveWest lessThan playerRot 225    # Jump to the right direction
+# _cHPLastDirEast:
+# jump _cHPMoveEast lessThan playerRot 225    # Continue last direction
+
+# jump _cHPLastDirNorth equal headRot 0       # If the last direction was opposite skip this
+# jump _cHPMoveSouth lessThan playerRot 315   # Jump to the right direction
+# _cHPLastDirNorth:
+# jump _cHPMoveNorth lessThan playerRot 315   # Continue last direction
 
 jump _cHPDone equal 1 1
 
@@ -279,7 +314,6 @@ read tailLen cell1 20
 
 set tailIndex 0
 _tailCalc:
-op add tempVal tempVal 1
 op mul memOffset 3 tailIndex
 op add tailXMem 26 memOffset
 op add tailYMem tailXMem 1
@@ -366,9 +400,9 @@ draw color 0 0 0 0 0
 op add retAddr @counter 1
 jump _setPlayerPos equal 1 1
 
-# Get Player Rotation
-op add retAddr @counter 1 
-jump _getPlayerRot equal 1 1
+# # Get Player Rotation
+# op add retAddr @counter 1 
+# jump _getPlayerRot equal 1 1
 
 # Calculate New Head Position
 op add retAddr @counter 1
@@ -386,11 +420,8 @@ jump _move equal 1 1
 op add retAddr @counter 1
 jump _display equal 1 1
 
-print tempVal
-printflush message1
-
 # Delay
-set delay 750
+set delay 500
 op add retAddr @counter 1
 jump _delayFuction equal 1 1
 
