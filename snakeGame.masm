@@ -50,7 +50,7 @@ op add snakeY snakeY moveX
 #_moveTailLoop:
 #set tailX snakeX
 #set tailY snakeY
-#op mul modx tail 2
+#op mul modx tail 3
 #op add mody modx 1
 #read modx cell1 modx
 #read mody cell1 mody
