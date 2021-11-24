@@ -115,8 +115,7 @@ set @counter retAddr
 # op add retAddr @counter 1
 # jump _getPlayerPos equal 1 1
 _getPlayerPos:
-getlink firstLink 0
-radar player any any distance firstLink 1 player
+radar player any any distance duo1 1 player
 
 sensor x player @x
 op sub x x @thisx

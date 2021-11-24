@@ -1,0 +1,76 @@
+# 11/24/2021
+# v6.0
+#
+# Player Pos Functions
+
+
+# Set Player Position
+#
+# op add retAddr @counter 1
+# jump _getPlayerPos equal 1 1
+_setPlayerPos:
+
+# Create the player object
+radar player any any distance duo1 1 player
+
+# Fill in Info
+sensor playerX player @x
+write playerX cell1 0
+
+sensor playerY player @y
+write playerY cell1 1
+
+sensor playerX player @x
+op sub playerRelX playerX @thisx
+write playerRelX cell1 2
+
+sensor playerY player @y
+op sub playerRelY playerY @thisy
+write playerRelY cell1 3
+
+sensor playerRot player @rotation
+write result cell1 4
+
+set @counter retAddr
+
+
+
+
+
+# Get Player Abs Position
+#
+# op add retAddr @counter 1
+# jump _getPlayerAbsPos equal 1 1
+_getPlayerAbsPos:
+
+read playerAbsX cell1 0
+read playerAbsY cell1 1
+
+set @counter retAddr
+
+
+
+
+# Get Player Rel Position
+#
+# op add retAddr @counter 1
+# jump _getPlayerAbsPos equal 1 1
+_getPlayerRelPos:
+
+read playerRelX cell1 2
+read playerRelY cell1 3
+
+set @counter retAddr
+
+
+
+
+# Get Player Rotation
+#
+# op add retAddr @counter 1
+# jump _getPlayerAbsPos equal 1 1
+_getPlayerRot:
+
+read playerRot cell1 5
+
+set @counter retAddr
