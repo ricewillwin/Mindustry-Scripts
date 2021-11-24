@@ -13,6 +13,15 @@ set tailLen 2
 
 jump _main equal 1 1
 
+
+
+
+
+
+
+
+
+
 # Functions
 
 # Delay Function
@@ -29,6 +38,14 @@ jump _delayLoop lessThan @time end
 set @counter retAddr
 
 
+
+
+
+
+
+
+
+
 # Display To Screen
 #
 # op add retAddr @counter 1
@@ -36,6 +53,15 @@ set @counter retAddr
 _display:
 drawflush display1
 set @counter retAddr
+
+
+
+
+
+
+
+
+
 
 
 # Move Snake
@@ -74,6 +100,14 @@ set snakeY 165
 _moveYDOWNDone:
 draw rect snakeX snakeY scale scale 0 0
 set @counter retAddr
+
+
+
+
+
+
+
+
 
 
 # Get Player Position
@@ -128,6 +162,14 @@ jump _gPPDone equal 1 1
 _gPPDone:
 
 set @counter retAddr
+
+
+
+
+
+
+
+
 
 
 # Main loop
