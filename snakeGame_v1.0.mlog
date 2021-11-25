@@ -172,19 +172,6 @@ set @counter retAddr
 
 
 
-# Get Player Rotation
-#
-# op add retAddr @counter 1
-# jump _getPlayerAbsPos equal 1 1
-_getPlayerRot:
-
-read playerRot cell1 4
-
-set @counter retAddr
-
-
-
-
 # Calculate New Head Position
 #
 # op add retAddr @counter 1
@@ -196,11 +183,6 @@ read headY cell1 24
 
 read headRot cell1 25
 write headRot cell1 10
-
-# 45 < playerRot < 135  - North 0
-# 45 > playerRot > 315  - East 1
-# 225 < playerRot < 315 - South 2
-# 135 < playerRot < 225 - West 3
 
 read playerRelX cell1 2
 read playerRelY cell1 3
@@ -228,28 +210,6 @@ jump _cHPMoveNorth lessThan 0 playerRelY
 jump _cHPMoveNorth equal headRot 0
 _cHPLastDirSouth:
 jump _cHPMoveSouth equal 1 1
-
-# jump _cHPLastDirWest equal headRot 3        # If the last direction was opposite skip this
-# jump _cHPMoveEast lessThan playerRot 45     # Jump to the right direction
-# jump _cHPMoveEast lessThan 315 playerRot    # Jump to the right direction
-# _cHPLastDirWest:
-# jump _cHPMoveWest lessThan playerRot 45     # Continue last direction
-# jump _cHPMoveWest lessThan 315 playerRot    # Continue last direction
-
-# jump _cHPLastDirSouth equal headRot 2       # If the last direction was opposite skip this
-# jump _cHPMoveNorth lessThan playerRot 135   # Jump to the right direction
-# _cHPLastDirSouth:
-# jump _cHPMoveSouth lessThan playerRot 135   # Continue last direction
-
-# jump _cHPLastDirEast equal headRot 1        # If the last direction was opposite skip this
-# jump _cHPMoveWest lessThan playerRot 225    # Jump to the right direction
-# _cHPLastDirEast:
-# jump _cHPMoveEast lessThan playerRot 225    # Continue last direction
-
-# jump _cHPLastDirNorth equal headRot 0       # If the last direction was opposite skip this
-# jump _cHPMoveSouth lessThan playerRot 315   # Jump to the right direction
-# _cHPLastDirNorth:
-# jump _cHPMoveNorth lessThan playerRot 315   # Continue last direction
 
 jump _cHPDone equal 1 1
 
@@ -328,10 +288,10 @@ op add nextTailDirMem tailDirMem 3
 write tailDir cell1 10
 write lastDir cell1 tailDirMem
 
-jump _tMoveNorth equal lastDir 0       # Jump to the right direction
-jump _tMoveEast equal lastDir 1        # Jump to the right direction
-jump _tMoveSouth equal lastDir 2       # Jump to the right direction
-jump _tMoveWest equal lastDir 3        # Jump to the right direction
+jump _tMoveNorth equal lastDir 0
+jump _tMoveEast equal lastDir 1
+jump _tMoveSouth equal lastDir 2
+jump _tMoveWest equal lastDir 3
 
 _tMoveNorth:
 op add tailY tailY 11
@@ -399,10 +359,6 @@ draw color 0 0 0 0 0
 # Get Player Position Data
 op add retAddr @counter 1
 jump _setPlayerPos equal 1 1
-
-# # Get Player Rotation
-# op add retAddr @counter 1 
-# jump _getPlayerRot equal 1 1
 
 # Calculate New Head Position
 op add retAddr @counter 1
